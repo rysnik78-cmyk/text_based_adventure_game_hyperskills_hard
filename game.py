@@ -1,3 +1,4 @@
+'''
 What's on the menu?
  Report a typo
 Description
@@ -55,7 +56,7 @@ Goodbye!
 Write a program
 
 Z <https://hyperskill.org/projects/161/stages/834/implement> 
-
+'''
 # write your code here
 from enum import Enum
 
