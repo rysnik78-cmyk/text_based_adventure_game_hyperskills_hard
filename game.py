@@ -1,46 +1,27 @@
 '''
-Gameplay time!
+Save the game
  Report a typo
 Description
-In this stage, you are going to add some new commands to a game, implement the core game features and the first level of the game.
-Let's start with adding new commands to a game, as this part is much simpler. When the player just reached the game loop after initializing character he should be able to call four possible commands: /h (show the help page with commands available to the player), /q (quit the game), and /i, /c (view inventory contents and information about character respectively). Make sure, that output on each command is formatted like in the examples.
-Weapon, tool and snack, that player entered before should be added to inventory before the game loop. Also, there is no need to output anything on /q command.
-The second part of this stage is gameplay creation. First, you need to read the contents of the story.json file. Download the file from the link and place it in a new subfolder data in your project directory. In this JSON file, you can see everything related to the story.
-Usually games of this genre are divided into several levels, which in turn are divided into multiple scenes. In each scene, the player sees the situation in which he/she finds himself/herself right now and several options that can be performed in order to influence the further continuation of the story. Each chosen option is followed by the result text of that option, the effect on the character and the scene.
-The structure of the json file, contains all the elements above as follows (for now second level is an empty object):
-1. First level{N} has a next key that contains a string with a next level key, and a scenes key with all the scenes used in level.
-2. Each scene{N} has a text key that contains a string with a text, that describes the situation, and an options key with a list of possible options, that can be performed in this scene.
-3. Each option has 4 keys:
-• option_text - A string that is displayed to the player as an action option
-• result_text - A string that is displayed to the player if he selects this option
-• actions - A list of outcome effects that are applied to the character on this option. Possible effects: +{item}, -{item} - item is added to or removed from the inventory; hit - character loses one health; heal - character restores one health
-• next - A string with a key for next scene. Can take the value 'end', which will mean the end of the level.
-Some strings in file may contain '{tool}', '{weapon}' or '{snack}' substrings. As you may have already guessed, instead of them, you should print/use the values entered earlier accordingly.
-Let's move on to the core game loop. When player enters any scene print it's text value and options in such format: {n}. {option_text}, where n is a number of option, starting from 1. Also, you need to satisfy the following requirements:
-• The game loop should check for the number of lives and if there are no lives remaining, the game should restart from the current level with a You died! message.
-• For now if the player reached the 'end' as the next scene output the Level 2 message and end the program.
-Feedbacks on each possible outcome effects:
-+{item}	Item added: {item}
--{item}	Item removed: {item}
-hit/heal	Lives remaining: {number_of_lives}
-Don't forget that the program must be case-insensitive, and incorrect input must be followed by a Unknown input! Please enter a valid one. message
-(Optional) Additional requirements in case you want to write your own story.
+The next thing we are going to implement is the saving feature.
+First, let's add a new command. In addition to /h, /c, /i and /q commands, the player should now have an option to save the game progress via /s command. By saying "the game progress", we mean the game stats player reached. Update the output of /h by adding a new command to a list: /s => Save the game.
+In your project directory, make a folder called data with a subfolder named saves. For now, it is empty, but to implement your save functionality, your program should create new JSON files and write the items from the game stats. Each JSON save file will be named with the player's username, such that its filepath looks like: data/saves/{username}.json. This way, each user will have their own save file. If the player saves the game and the save-file is already present - it is necessary to update it according to the current game situation.
+Write the following game stats to your save file: the character traits; in-game inventory; namings for {snack}, {weapon} and {tool}; difficulty; remaining lives and the progress player reached (current level and scene). To understand how to write the stats to file you can check this example save JSON file for the user called 'new_user': data/saves/new_user.json. Follow the same structure exactly as you see in this example text file, with the necessary keys and values in the JSON.
+In order for the player to realize that saving was successful, it is necessary to display the corresponding message Game saved! after calling /s command.
+You can add some color to your text if you want to make it more fun. The Termcolor library can help you with that. Our tests do not check the color of your text.
 Objectives
-1. (Optional) Write your own story, following the requirements mentioned earlier;
-2. Add to the program the ability to correctly process commands /h, /q, /i and /c;
-3. Read the story content, replacing '{tool}', '{weapon}' or '{snack}' substrings with appropriate ones;
-4. Implement a game loop that correctly tells a story based on the file;
-5. Correctly process user input in a game loop and give an appropriate feedback.
-Examples
+In this stage, your program should be able to:
+1. Create save files for each user on /s command call with corresponding save-message.
+2. Update the save-file if it is already present in saves folder.
+Example
 The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
-Example 1: the player finishes it's character creation and enters the game loop.
+Example 1: saving the game after character creation
 ***Welcome to the Journey to Mount Qaf***
 1. Start a new game (START)
 2. Load your progress (LOAD)
 3. Quit the game (QUIT)
 > 1
 Starting a new game...
-Enter a username ('/b' to go back): > Hyperskill
+Enter a username ('/b' to go back): > hyperskill
 Create your character:
 	Name: > John
 	Species: > Human
@@ -53,12 +34,12 @@ Choose your difficulty:
 	1. Easy
 	2. Medium
 	3. Hard
-> hard
-Good luck on your journey, Hyperskill!
+> easy
+Good luck on your journey, hyperskill!
 Your character: John, Human, male
 Your inventory: apple, sword, pickaxe
-Difficulty: hard
-Number of lives: 1
+Difficulty: easy
+Number of lives: 5
 ---------------------------
 Once you reach the beginning of the Mount Qaf, you feel amazed by the majestic
 mountain that you will conquer, at the end of this climb. You look at the snowy peaks while
@@ -66,93 +47,70 @@ thinking of how to start the journey. There is a hill before you.
 1. Walk around a bit, maybe you'll find something interesting.
 2. Walk up the hill and begin climbing.
 3. Enjoy the scenery.
+> /s
+Game saved!
 ...
-Example 2: scene switching.
+Save-file:
+{
+  "character": {
+    "name": "John",
+    "species": "Human",
+    "gender": "male"
+  },
+  "inventory": {
+    "snack_name": "apple",
+    "weapon_name": "sword",
+    "tool_name": "pickaxe",
+    "content": [
+      "apple",
+      "sword",
+      "pickaxe"
+    ]
+  },
+  "progress": {
+    "level": "level1",
+    "scene": "scene1"
+  },
+  "lives": 5,
+  "difficulty": "easy"
+}
+Example 2: updating the save-file after some actions performed
 ...
-Once you reach the beginning of the Mount Qaf, you feel amazed by the majestic
-mountain that you will conquer, at the end of this climb. You look at the snowy peaks while
-thinking of how to start the journey. There is a hill before you.
-1. Walk around a bit, maybe you'll find something interesting.
-2. Walk up the hill and begin climbing.
-3. Enjoy the scenery.
-> 3
-You admired the majestic view of the mountain!
-That view was really astounding! But we can't stand here forever, mesmerized by it
-1. Walk around a bit, maybe you'll find something interesting.
-2. Walk up the hill and begin climbing.
+The voice says 'Too bad, I thought you were clever! Should I give you another chance?' as it gets closer to you.
+------ Lives remaining: 3 ------
+"Of course it was the wrong answer, how could I be so wrong?" you thought.
+1. A mosquito.
+2. A bumblebee.
+> /s
+Game saved!
 ...
-Example 3: scene switching with +{item} action.
-...
-> 1
-In a small cave nearby you found a key.
------- Item added: key ------
-...
-Example 4: scene switching with -{item} action.
-...
-> 2
-You go up the mountain, using the pickaxe
------- Item removed: pickaxe ------
-...
-Example 5: scene switching with hit action.
-...
-> 1
-Unfortunately, the source of the sound was a large rat that took advantage of your carelessness
-and bit your leg.
-You've tried to run further up the staircase.
------- Lives remaining: 4 ------
-...
-Example 6: scene switching with heal and -{item} actions.
-...
-> 3
-When the sword hit the source of the sound, it went silent.
-That gave you confidence and you've calmly continued your way up.
------- Item removed: sword ------
------- Lives remaining: 6 ------
-...
-Example 7: proceeding to the next level.
-...
-> 3
-The darkness says 'Correct! You may pass traveller.'
-You saw a light coming from the inner cave and you follow it.
------- Level 2 ------
-Example 8: character dies.
-...
-> 1
-Unfortunately, the source of the sound was a large rat that took advantage of your carelessness
-and bit your leg.
-You've tried to run further up the staircase.
------- You died ------
-Once you reach the beginning of the Mount Qaf, you feel amazed by the majestic
-mountain that you will conquer, at the end of this climb. You look at the snowy peaks while
-thinking of how to start the journey. There is a hill before you.
-1. Walk around a bit, maybe you'll find something interesting.
-2. Walk up the hill and begin climbing.
-3. Enjoy the scenery.
-...
-Example 9: calling commands.
-...
-> /h
-Type the number of the option you want to choose.
-Commands you can use:
-/i => Shows inventory.
-/q => Exits the game.
-/c => Shows the character traits.
-/h => Shows help.
-> /c
-Your character: John, Human, male.
-Lives remaining: 1
-> /i
-Inventory: apple, sword, key
-> /q
-Thanks for playing!
-Example 10: one of scenarios from start to the end
-
-
+Save-file:
+{
+  "character": {
+    "name": "John",
+    "species": "Human",
+    "gender": "male"
+  },
+  "inventory": {
+    "snack_name": "apple",
+    "weapon_name": "sword",
+    "tool_name": "pickaxe",
+    "content": [
+      "apple"
+    ]
+  },
+  "progress": {
+    "level": "level1",
+    "scene": "scene9"
+  },
+  "lives": 3,
+  "difficulty": "easy"
+}
 Write a program
 
-Z <https://hyperskill.org/projects/161/stages/836/implement> 
-'''
+Z <https://hyperskill.org/projects/161/stages/837/implement> 
 
+'''
 
 # write your code here
 from enum import Enum
@@ -167,7 +125,8 @@ Commands you can use:
 /i => Shows inventory.
 /q => Exits the game.
 /c => Shows the character traits.
-/h => Shows help.'''}
+/h => Shows help.
+/s => Save the game,'''}
 
 class SceneMaker:
     def __init__(self):
@@ -265,6 +224,14 @@ class User():
                 inventory_string = inventory_string + self.inventory[key]['text'] + ', '
         print(inventory_string[:-2])
 
+    def inventory_list(self):
+        # ["apple", "sword", "pickaxe"]
+        inventory_list = []
+        for key in self.inventory:
+            if self.inventory[key]['state']:
+                inventory_list.append(self.inventory[key]['text'])
+        return inventory_list
+
     def change_inventory(self, item):
         if '-' in item.lower():
             for key in self.inventory:
@@ -297,6 +264,20 @@ class Main_Logic():
         self.game_user = None
         self.program_status = 'MAIN MENU'
         self.main_loop()
+
+    def save_game(self):
+        content_list = self.game_user.inventory_list()
+        save_dict= {"character": {"name": self.game_user.name, "species": self.game_user.species, "gender": self.game_user.gender},
+            "inventory": {"snack_name": self.game_user.snack, "weapon_name": self.game_user.weapon, "tool_name": self.game_user.tool, "content": content_list},
+            "progress": {"level": scene_maker.actual_level, "scene": scene_maker.actual_scene_within_level},
+            "lives": self.game_user.number_of_lives,
+            "difficulty": self.game_user.diff_lev_str}
+
+        save_path = f'data/saves/{self.game_user.user_name}.json'
+        print(save_path)
+        with open(save_path, 'w') as json_file:
+            json.dump(save_dict, json_file)
+        print('Game saved!')
 
     def brackets_in_text_verified(self, text):
 
@@ -371,6 +352,9 @@ class Main_Logic():
                         return
                     case '/c': # => Shows the character traits.
                         self.game_user.show_traits()
+                        continue
+                    case '/s': # => Save the game
+                        self.save_game()
                         continue
                     case _:
                         if game_command in scene_options_dict:
