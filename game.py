@@ -1,56 +1,34 @@
 '''
-Save the game
+Load the game
  Report a typo
 Description
-The next thing we are going to implement is the saving feature.
-First, let's add a new command. In addition to /h, /c, /i and /q commands, the player should now have an option to save the game progress via /s command. By saying "the game progress", we mean the game stats player reached. Update the output of /h by adding a new command to a list: /s => Save the game.
-In your project directory, make a folder called data with a subfolder named saves. For now, it is empty, but to implement your save functionality, your program should create new JSON files and write the items from the game stats. Each JSON save file will be named with the player's username, such that its filepath looks like: data/saves/{username}.json. This way, each user will have their own save file. If the player saves the game and the save-file is already present - it is necessary to update it according to the current game situation.
-Write the following game stats to your save file: the character traits; in-game inventory; namings for {snack}, {weapon} and {tool}; difficulty; remaining lives and the progress player reached (current level and scene). To understand how to write the stats to file you can check this example save JSON file for the user called 'new_user': data/saves/new_user.json. Follow the same structure exactly as you see in this example text file, with the necessary keys and values in the JSON.
-In order for the player to realize that saving was successful, it is necessary to display the corresponding message Game saved! after calling /s command.
-You can add some color to your text if you want to make it more fun. The Termcolor library can help you with that. Our tests do not check the color of your text.
+In this stage, you are going to implement the loading feature in your game. Don't forget to add Level 2! If you wish, you can write the next level by yourself following the requirements from the third stage or by analogy with the first level. Otherwise, replace the previously used story-file with a new one story.json, already formed in advance.
+We already included the loading option in our menu. Now it's time to polish it.
+First, you need to check how many users are stored in the save folder. Output Choose username (/b - back): message, show the list of the usernames without the %.json% extension and take the user input. If the user input is the /b command, return the player to the main menu in the same way as for the game start option. Otherwise, read the save file, belonging to this username.
+Once you loaded the save, you need to bring the game stats back into the game. Print Loading your progress... and Level {n} messages. Show last scene's text with options, so that after loading, the game will resume from where the player left off the last time.
+The tests do not check if your program has finished at the end of both levels, so that you can modify the game as you want and add more and more interesting levels.
+And again, don't forget that the program must be case-insensitive, and incorrect input must be followed by a Unknown input! Please enter a valid one. message
+Good luck on your future journeys, travelers!
 Objectives
-In this stage, your program should be able to:
-1. Create save files for each user on /s command call with corresponding save-message.
-2. Update the save-file if it is already present in saves folder.
-Example
+1. (Optional) Write your own second level, following the requirements mentioned in third stage;
+2. Show the list of usernames with saves if user chooses load option;
+3. Take the user input to load the game (or /b command to return back to main menu). Use the prompt mentioned earlier to signal the user to start typing;
+4. Load the player state from save-file, so that user can resume from where he left off last time. Don't forget to output level and last scene's text with options.
+Examples
 The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
-Example 1: saving the game after character creation
-***Welcome to the Journey to Mount Qaf***
-1. Start a new game (START)
-2. Load your progress (LOAD)
-3. Quit the game (QUIT)
-> 1
-Starting a new game...
-Enter a username ('/b' to go back): > hyperskill
-Create your character:
-	Name: > John
-	Species: > Human
-	Gender: > male
-Pack your bag for the journey:
-	Snack: > apple
-	Weapon: > sword
-	Tool: > pickaxe
-Choose your difficulty:
-	1. Easy
-	2. Medium
-	3. Hard
-> easy
-Good luck on your journey, hyperskill!
-Your character: John, Human, male
-Your inventory: apple, sword, pickaxe
-Difficulty: easy
-Number of lives: 5
----------------------------
-Once you reach the beginning of the Mount Qaf, you feel amazed by the majestic
-mountain that you will conquer, at the end of this climb. You look at the snowy peaks while
-thinking of how to start the journey. There is a hill before you.
-1. Walk around a bit, maybe you'll find something interesting.
-2. Walk up the hill and begin climbing.
-3. Enjoy the scenery.
-> /s
-Game saved!
+Example 1: moving to the second level.
 ...
-Save-file:
+> 3
+The darkness says 'Correct! You may pass traveller.'
+You saw a light coming from the inner cave and you follow it.
+------ Level 2 ------
+You stand before a narrow, treacherous path that winds along the mountain's edge.
+The wind howls, and the path looks perilous. What will you do?
+1. Bravely attempt the treacherous path.
+2. Search for an alternate route.
+...
+Example 2: loading the game from save-file.
+hyperskill.json:
 {
   "character": {
     "name": "John",
@@ -63,54 +41,56 @@ Save-file:
     "tool_name": "pickaxe",
     "content": [
       "apple",
-      "sword",
-      "pickaxe"
+      "sword"
     ]
   },
   "progress": {
-    "level": "level1",
-    "scene": "scene1"
+    "level": "level2",
+    "scene": "scene4"
   },
   "lives": 5,
   "difficulty": "easy"
 }
-Example 2: updating the save-file after some actions performed
-...
-The voice says 'Too bad, I thought you were clever! Should I give you another chance?' as it gets closer to you.
------- Lives remaining: 3 ------
-"Of course it was the wrong answer, how could I be so wrong?" you thought.
-1. A mosquito.
-2. A bumblebee.
-> /s
-Game saved!
-...
-Save-file:
-{
-  "character": {
-    "name": "John",
-    "species": "Human",
-    "gender": "male"
-  },
-  "inventory": {
-    "snack_name": "apple",
-    "weapon_name": "sword",
-    "tool_name": "pickaxe",
-    "content": [
-      "apple"
-    ]
-  },
-  "progress": {
-    "level": "level1",
-    "scene": "scene9"
-  },
-  "lives": 3,
-  "difficulty": "easy"
-}
+***Welcome to the Journey to Mount Qaf***
+1. Start a new game (START)
+2. Load your progress (LOAD)
+3. Quit the game (QUIT)
+> 2
+Choose username (/b - back):
+another_user
+hyperskill
+> hyperskill
+Loading your progress...
+------ Level 2 ------
+You ascend higher, the air getting thinner as you approach the summit.
+The landscape becomes more rugged and desolate.
+Suddenly, you stumble upon an injured traveler lying on the ground.
+1. Offer your assistance and heal the traveler's wounds.
+2. Keep your guard up and cautiously approach the traveler.
+Example 3: incorrect input and back command.
+Thanks for playing!
+***Welcome to the Journey to Mount Qaf***
+1. Start a new game (START)
+2. Load your progress (LOAD)
+3. Quit the game (QUIT)
+> 2
+Choose username (/b - back):
+another_user
+hyperskill
+> not_existing_username
+Unknown input! Please enter a valid one.
+> /b
+***Welcome to the Journey to Mount Qaf***
+1. Start a new game (START)
+2. Load your progress (LOAD)
+3. Quit the game (QUIT)
+
 Write a program
 
-Z <https://hyperskill.org/projects/161/stages/837/implement> 
-
+Z <https://hyperskill.org/projects/161/stages/838/implement> 
 '''
+
+
 
 # write your code here
 from enum import Enum
@@ -139,8 +119,6 @@ class SceneMaker:
         self.actual_level = 'level1'
         self.actual_scene_within_level = 'scene1'
 
-
-
     def print_actual_scene_output(self):
         # description
 
@@ -151,15 +129,9 @@ class SceneMaker:
         scene_options_list = self.all_scenes_dict[self.actual_level]['scenes'][self.actual_scene_within_level]['options']
         return {str(n + 1): scene_options_list[n] for n in range(len(scene_options_list))}
 
-    # def actual_scene_options_dict(self):
-    #     scene_options_dict = self.scene_options_dict()
-    #     for key in scene_options_dict:
-    #         print(f'{key}. {self.brackets_in_text_verified(scene_options_dict[key]['option_text'])}')
-
-
     def change_scene(self, next_scene):
         if next_scene == 'end':
-            if self.actual_level == 'level2':
+            if self.actual_level == 'level3':
                 self.actual_level = 'end'
             else:
                 self.actual_level = self.all_scenes_dict[self.actual_level]['next']
@@ -170,40 +142,54 @@ class SceneMaker:
         # print(self.actual_scene_within_level)
 
 class User():
-    def __init__(self, user_name):
+    def __init__(self, user_name, clean=False):
         self.user_name = user_name
-        print('Create your character:')
-        self.name = input('Name: ')
-        self.species = input('Species: ')
-        self.gender = input('Gender: ')
-        self.diff_lev_str = None
-        self.diff_lev_int = None
-        print('Pack your bag for the journey:')
-        self.snack = input('Snack: ')
-        self.weapon = input('Weapon: ')
-        self.tool = input('Tool: ')
-        self.inventory = {'snack': {'state':True, 'text': self.snack},
-                          'weapon': {'state': True, 'text': self.weapon},
-                          'tool': {'state': True, 'text': self.tool},
-                          'key': {'state': False, 'text': 'key'},
-                          'amulet': {'state': False, 'text': 'amulet'},
-                          'potion': {'state': False, 'text': 'potion'}}
-        print('Choose your difficulty:')
-        for key, menu_text in MENU_ELEMENTS.MENU.value['level_menu'].items():
-            print(f'{key}. {menu_text[0]}')
-        while True:
-            self.diff_lev_str = input()
+        if not clean:
+            print('Create your character:')
+            self.name = input('Name: ')
+            self.species = input('Species: ')
+            self.gender = input('Gender: ')
+            self.diff_lev_str = None
+            self.diff_lev_int = None
+            print('Pack your bag for the journey:')
+            self.snack = input('Snack: ')
+            self.weapon = input('Weapon: ')
+            self.tool = input('Tool: ')
+            self.inventory = {'snack': {'state':True, 'text': self.snack},
+                              'weapon': {'state': True, 'text': self.weapon},
+                              'tool': {'state': True, 'text': self.tool},
+                              'key': {'state': False, 'text': 'key'},
+                              'amulet': {'state': False, 'text': 'amulet'},
+                              'potion': {'state': False, 'text': 'potion'}}
+            print('Choose your difficulty:')
             for key, menu_text in MENU_ELEMENTS.MENU.value['level_menu'].items():
+                print(f'{key}. {menu_text[0]}')
+            while True:
+                self.diff_lev_str = input()
+                for key, menu_text in MENU_ELEMENTS.MENU.value['level_menu'].items():
 
-                if self.diff_lev_str == str(key) or self.diff_lev_str.lower() == menu_text[1]:
-                    self.diff_lev_int = key
-                    self.number_of_lives = 7 - 2 * self.diff_lev_int
-            if self.diff_lev_int:
-                break
-            else:
-                print('Unknown input! Please enter a valid one.')
-                continue
-        self.print_user_data()
+                    if self.diff_lev_str == str(key) or self.diff_lev_str.lower() == menu_text[1]:
+                        self.diff_lev_int = key
+                        self.number_of_lives = 7 - 2 * self.diff_lev_int
+                if self.diff_lev_int:
+                    break
+                else:
+                    print('Unknown input! Please enter a valid one.')
+                    continue
+            self.print_user_data()
+        else:
+            self.name = None
+            self.species = None
+            self.gender = None
+            self.diff_lev_str = None
+            self.diff_lev_int = None
+            self.snack = None
+            self.weapon = None
+            self.tool = None
+            self.inventory = None
+            self.diff_lev_str = None
+            self.number_of_lives = None
+            self.diff_lev_int = None
 
     def print_user_data(self):
         print(f'Good luck on your journey, {self.user_name}!')
@@ -234,7 +220,7 @@ class User():
 
     def change_inventory(self, item):
         if '-' in item.lower():
-            for key in self.inventory:
+            for key in self.inventory.keys():
                 if key in item.lower():
                     self.inventory[key]['state'] = False
                     print(f'------ Item removed: {self.inventory[key]['text']} ------')
@@ -265,30 +251,86 @@ class Main_Logic():
         self.program_status = 'MAIN MENU'
         self.main_loop()
 
+    def load_game(self):
+        file_list = os.listdir('data/saves')
+        saved_game_files_list = [x[:-5] for x in file_list if x.endswith('.json')]
+        if not saved_game_files_list:
+            print('No saved data found')
+            return
+        else:
+            # saved_game_files_dict = {str(i): saved_game_files_list[i - 1] for i in range(1, len(saved_game_files_list) + 1)}
+            for save in saved_game_files_list:
+                print(save)
+            print('Choose username (/b - back):')
+            while True:
+                save_choice = input()
+                if save_choice in saved_game_files_list:
+                    print('Loading your progress...')
+                    break
+                elif save_choice.lower() == '/b':
+                    return
+                else:
+                    print('Unknown input! Please enter a valid one.')
+                    continue
+        save_path = f'data/saves/{save_choice}.json'
+        with open(save_path, 'r') as json_file:
+            save_dict = json.load(json_file)
+        self.game_user = User(save_choice, clean=True)
+        self.game_user.name = save_dict['character']['name']
+        self.game_user.species = save_dict['character']['species']
+        self.game_user.gender = save_dict['character']['gender']
+        self.game_user.snack = save_dict['inventory']['snack_name']
+        self.game_user.weapon = save_dict['inventory']['weapon_name']
+        self.game_user.tool = save_dict['inventory']['tool_name']
+        self.game_user.inventory = {'snack': {'state': False, 'text': self.game_user.snack},
+                                'weapon': {'state': False, 'text': self.game_user.weapon},
+                                'tool': {'state': False, 'text': self.game_user.tool},
+                                'key': {'state': False, 'text': 'key'},
+                                'amulet': {'state': False, 'text': 'amulet'},
+                                'potion': {'state': False, 'text': 'potion'}}
+        # print(save_dict['inventory']['content'])
+        for element in save_dict['inventory']['content']:
+            # print(element)
+            if element == self.game_user.snack:
+                self.game_user.inventory['snack']['state'] = True
+            if element == self.game_user.weapon:
+                self.game_user.inventory['weapon']['state'] = True
+            if element == self.game_user.tool:
+                self.game_user.inventory['tool']['state'] = True
+            elif element in self.game_user.inventory.keys():
+                 print(element, self.game_user.inventory[element])
+                 self.game_user.inventory[element]['state'] = True
+        # print(self.game_user.inventory)
+        scene_maker.actual_level = save_dict['progress']['level']
+        print(f'------ Level {scene_maker.actual_level[-1]} ------')
+        scene_maker.actual_scene_within_level = save_dict['progress']['scene']
+        self.game_user.number_of_lives = save_dict['lives']
+        self.game_user.diff_lev_str = save_dict['difficulty']
+        for key, menu_text in MENU_ELEMENTS.MENU.value['level_menu'].items():
+            if self.game_user.diff_lev_str == str(key) or self.game_user.diff_lev_str.lower() == menu_text[1]:
+                self.game_user.diff_lev_int = key
+
     def save_game(self):
         content_list = self.game_user.inventory_list()
+        # print(content_list)
         save_dict= {"character": {"name": self.game_user.name, "species": self.game_user.species, "gender": self.game_user.gender},
             "inventory": {"snack_name": self.game_user.snack, "weapon_name": self.game_user.weapon, "tool_name": self.game_user.tool, "content": content_list},
             "progress": {"level": scene_maker.actual_level, "scene": scene_maker.actual_scene_within_level},
             "lives": self.game_user.number_of_lives,
             "difficulty": self.game_user.diff_lev_str}
-
         save_path = f'data/saves/{self.game_user.user_name}.json'
-        print(save_path)
+        # print(save_path)
         with open(save_path, 'w') as json_file:
             json.dump(save_dict, json_file)
         print('Game saved!')
 
     def brackets_in_text_verified(self, text):
-
         if '{tool}' in text:
-
             text = text.replace('{tool}', self.game_user.tool)
         if '{weapon}' in text:
             text = text.replace('{weapon}', self.game_user.weapon)
         if '{snack}' in text:
             text = text.replace('{snack}', self.game_user.snack)
-
         return text
 
     def print_actual_menu(self, menu_type):
@@ -303,7 +345,6 @@ class Main_Logic():
         return None
 
     def main_loop(self):
-
         while self.program_status != 'QUIT':
             print('***Welcome to the Trap Door***')
             self.print_actual_menu(self.program_status)
@@ -320,7 +361,9 @@ class Main_Logic():
                         self.game_loop()
                     continue
                 case 'MAIN MENU', '2':
-                    print('No saved data found')
+                    self.load_game()
+                    if self.game_user:
+                        self.game_loop()
                     # self.program_status = 'TOP TEN MENU'
                     continue
                 case 'MAIN MENU', '3':
@@ -329,7 +372,6 @@ class Main_Logic():
                 case 'MAIN MENU', _:
                     print(unk_inp)
                     continue
-
 
     def game_loop(self):
         while True:
@@ -365,15 +407,16 @@ class Main_Logic():
                                     self.game_user.change_inventory(action)
                                 if 'hit' in action.lower() or 'heal' in action.lower():
                                     self.game_user.change_live(action)
+                            print(self.game_user.inventory)
                             # print(scene_options_dict[game_command]['next'])
                             if self.game_user.number_of_lives == 0:
                                 scene_maker.change_scene('scene1')
                                 self.game_user.change_live('heal')
                             else:
                                 scene_maker.change_scene(scene_options_dict[game_command]['next'])
-                                if scene_maker.actual_level == 'level2':
+                                if scene_maker.actual_level == 'end':
                                     self.program_status = 'QUIT'
-                                    # print('Thanks for playing!')
+                                    print('Thanks for playing!')
                                     return
                             break
                         else:
